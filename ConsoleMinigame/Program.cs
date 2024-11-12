@@ -1,12 +1,14 @@
-﻿using ConsoleNewMinigame;
+﻿using System;
 using System.Linq;
-using System;
 using System.Threading;
+using ConsoleNewMinigame;
 
 namespace ConsoleApp1
 {
     internal class Program
     {
+
+
         protected static int origRow;
         protected static int origCol;
 
@@ -124,19 +126,29 @@ namespace ConsoleApp1
 
             switch (player.last_key)
             {
+                case "R":
+
+                    Fruit_Spawner(grid, player);
+                    player.last_key = "Enter";
+                    break;
                 case "E":
                     Thread.Sleep(100);
                     WriteAt("Score:" + Length, 7, 0);
                     //Swing(grid, player); break;
-                    Increase_size(player);                 
-                        break;
-                    
+                    Increase_size(player);
+                    player.last_key = "Enter";
+                    break;
+
                 case "W":
 
                     player.y--;
                     if (grid[player.y, player.x] == 1)
                     {
                         player.y++;
+                    }
+                    else if (grid[player.y, player.x] == 3)
+                    {
+                        Increase_size(player);
                     }
                     break;
                 case "A":
@@ -147,6 +159,10 @@ namespace ConsoleApp1
                     {
                         player.x++;
                     }
+                    else if (grid[player.y, player.x] == 3)
+                    {
+                        Increase_size(player);
+                    }
                     break;
                 case "S":
 
@@ -156,6 +172,10 @@ namespace ConsoleApp1
                     {
                         player.y--;
                     }
+                    else if (grid[player.y, player.x] == 3)
+                    {
+                        Increase_size(player);
+                    }
                     break;
                 case "D":
 
@@ -164,6 +184,10 @@ namespace ConsoleApp1
                     if (grid[player.y, player.x] == 1)
                     {
                         player.x--;
+                    }
+                    else if (grid[player.y, player.x] == 3)
+                    {
+                        Increase_size(player);
                     }
                     break;
             }
@@ -211,14 +235,24 @@ namespace ConsoleApp1
             {
 
             }
-            
+
         }
         static void Increase_size(object instance)
         {
             Player player = (Player)instance;
             player.lengthX.Enqueue(player.x);
             player.lengthY.Enqueue(player.y);
-            player.last_key = "R";
+
+        }
+
+        static void Fruit_Spawner(int[,] grid, object instance)
+        {
+            Player player = (Player)instance;
+            Random random = new Random();
+            int y = random.Next(1, grid.GetLength(0));
+            int x = random.Next(1, grid.GetLength(01));
+            grid[y, x] = 3;
+            WriteAt("██", x * 2 + player.Xoff, y + player.Yoff);
         }
 
 
