@@ -196,6 +196,7 @@ namespace ConsoleApp1
             WriteAt("██", player.x * 2 + X_off, player.y + Y_off);
 
         }
+        //may remove this tomorow or rename it
         static void Swing(int[,] grid, object instance)
         {
 
