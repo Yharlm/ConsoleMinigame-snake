@@ -1,6 +1,3 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
 using ConsoleNewMinigame;
 
 namespace ConsoleApp1
@@ -29,18 +26,26 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-
-            int x = 20;
-            int y = 14;
-            int[,] grid = new int[y, x];
-            Player player = new Player();
-            BuildBorder(grid, player);
             while (true)
             {
 
-                Player(grid, player);
-                Tail(player, grid);
+                Console.Clear();
+                int x = 20;
+                int y = 14;
+                int[,] grid = new int[y, x];
+                Player player = new Player();
+                BuildBorder(grid, player);
+                Fruit_Spawner(grid, player);
+                while (player.Is_alive)
+                {
+
+                    Player(grid, player);
+                    Tail(player, grid);
+                }
+                Console.ReadKey();
+                player.Is_alive = true;
             }
+
 
 
         }
@@ -126,13 +131,16 @@ namespace ConsoleApp1
 
             switch (player.last_key)
             {
+                case "G":
+                    player.God_Mode = true;
+                    WriteAt("GodMode", 0,2); break;
                 case "R":
 
                     Fruit_Spawner(grid, player);
                     player.last_key = "Enter";
                     break;
                 case "E":
-                    Thread.Sleep(100);
+                    //Thread.Sleep(100);
                     WriteAt("Score:" + Length, 7, 0);
                     //Swing(grid, player); break;
                     Increase_size(player);
@@ -145,10 +153,12 @@ namespace ConsoleApp1
                     if (grid[player.y, player.x] == 1)
                     {
                         player.y++;
+                        GameOver(player);
                     }
                     else if (grid[player.y, player.x] == 3)
                     {
                         Increase_size(player);
+                        Fruit_Spawner(grid, player);
                     }
                     break;
                 case "A":
@@ -158,10 +168,12 @@ namespace ConsoleApp1
                     if (grid[player.y, player.x] == 1)
                     {
                         player.x++;
+                        GameOver(player);
                     }
                     else if (grid[player.y, player.x] == 3)
                     {
                         Increase_size(player);
+                        Fruit_Spawner(grid, player);
                     }
                     break;
                 case "S":
@@ -171,10 +183,12 @@ namespace ConsoleApp1
                     if (grid[player.y, player.x] == 1)
                     {
                         player.y--;
+                        GameOver(player);
                     }
                     else if (grid[player.y, player.x] == 3)
                     {
                         Increase_size(player);
+                        Fruit_Spawner(grid, player);
                     }
                     break;
                 case "D":
@@ -184,10 +198,12 @@ namespace ConsoleApp1
                     if (grid[player.y, player.x] == 1)
                     {
                         player.x--;
+                        GameOver(player);
                     }
                     else if (grid[player.y, player.x] == 3)
                     {
                         Increase_size(player);
+                        Fruit_Spawner(grid, player);
                     }
                     break;
             }
@@ -243,6 +259,7 @@ namespace ConsoleApp1
             Player player = (Player)instance;
             player.lengthX.Enqueue(player.x);
             player.lengthY.Enqueue(player.y);
+            WriteAt("Score:" + player.lengthY.Count(), 7, 0);
 
         }
 
@@ -250,16 +267,31 @@ namespace ConsoleApp1
         {
             Player player = (Player)instance;
             Random random = new Random();
-            int y = random.Next(1, grid.GetLength(0));
-            int x = random.Next(1, grid.GetLength(01));
+            int y = random.Next(1, grid.GetLength(0)-1);
+            int x = random.Next(1, grid.GetLength(01)-1);
             grid[y, x] = 3;
             WriteAt("██", x * 2 + player.Xoff, y + player.Yoff);
         }
 
-
+        static void GameOver(object instance)
+        {
+            Player player = (Player)instance;
+            if (player.God_Mode != true)
+            {
+                Console.Clear();
+                
+                player.Is_alive = false;
+                WriteAt(" _________________ ", player.x * 2 + player.Xoff, player.y - 1 + player.Yoff);
+                WriteAt("/                 \\", player.x * 2 + player.Xoff, player.y + player.Yoff);
+                WriteAt("|                 |", player.x * 2 + player.Xoff, player.y + 1 + player.Yoff);
+                WriteAt("|    GAME OVER    |", player.x * 2 + player.Xoff, player.y + 2 + player.Yoff);
+                WriteAt("|                 |", player.x * 2 + player.Xoff, player.y + 3 + player.Yoff);
+                WriteAt("\\_________________/", player.x * 2 + player.Xoff, player.y + 4 + player.Yoff);
+                Console.ReadKey();
+            }
+        }
     }
 }
-
 
 
 
