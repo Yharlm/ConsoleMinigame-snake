@@ -131,6 +131,10 @@ namespace ConsoleApp1
 
             switch (player.last_key)
             {
+                case "T":
+
+                    Swing(grid, player);
+                break;
                 case "G":
                     player.God_Mode = true;
                     WriteAt("GodMode", 0,2); break;
@@ -213,21 +217,29 @@ namespace ConsoleApp1
 
         }
         //may remove this tomorow or rename it
+
+        static void LoopPrint(int counter , int x, int y, string text,object instance) 
+        {
+            
+            
+            Player player = (Player) instance;
+            int X = player.x * 2;
+            int Y = player.y;
+            while (0 > counter)
+            {
+                WriteAt(text, X+(counter * x),Y + (counter *y));
+                counter--;
+            }
+        }
         static void Swing(int[,] grid, object instance)
         {
 
             Player player = (Player)instance;
-            int x = player.x * 2;
-            int y = player.y;
-
-
-            WriteAt("]>-----------------", x + 2, y + 1);
-            Thread.Sleep(120);
-            WriteAt("                   ", x + 2, y + 1);
-            for (int i = player.x; i < grid.GetLength(0); i++)
-            {
-                grid[i, y] = 0;
-            }
+            //           x, y
+            LoopPrint(6, 1, 0, "--", player);
+            LoopPrint(6, -1, 0, "--", player);
+            LoopPrint(6, 0, -1, "| ", player);
+            LoopPrint(6, 0, 1, "|", player);
 
 
 
@@ -270,7 +282,9 @@ namespace ConsoleApp1
             int y = random.Next(1, grid.GetLength(0)-1);
             int x = random.Next(1, grid.GetLength(01)-1);
             grid[y, x] = 3;
+            Console.ForegroundColor = ConsoleColor.Red;
             WriteAt("██", x * 2 + player.Xoff, y + player.Yoff);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         static void GameOver(object instance)
@@ -287,7 +301,7 @@ namespace ConsoleApp1
                 WriteAt("|    GAME OVER    |", player.x * 2 + player.Xoff, player.y + 2 + player.Yoff);
                 WriteAt("|                 |", player.x * 2 + player.Xoff, player.y + 3 + player.Yoff);
                 WriteAt("\\_________________/", player.x * 2 + player.Xoff, player.y + 4 + player.Yoff);
-                Console.ReadKey();
+                //Console.ReadKey();
             }
         }
     }
