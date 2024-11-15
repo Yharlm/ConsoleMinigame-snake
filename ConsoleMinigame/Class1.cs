@@ -13,43 +13,36 @@ namespace ConsoleNewMinigame
     {
         public bool God_Mode = false;
         public bool Is_alive = true;
+        public string previous_key = null;
         public string last_key = null;
         public int x = 1;
         public int y = 1;
         public int Xoff = 36;
         public int Yoff = 7;
-        public Queue<int> lengthX = new Queue<int>();
-        public Queue<int> lengthY = new Queue<int>();
-        
-        public Queue<string> length = new Queue<string>();
+ //       public Queue<int> lengthX = new Queue<int>();
+ //       public Queue<int> lengthY = new Queue<int>();
+
+        public Queue<Cordinates> length = new Queue<Cordinates>();
         public void Increse_length()
         {
-            lengthX.Enqueue(x);
-            lengthY.Enqueue(y);
-            //length.Enqueue(x,y);
+            Cordinates cordinates = new Cordinates();
+            cordinates.X = x;
+            cordinates.Y = y;
+            
         }
 
     }
-    class Cordinates : Player
+    class Cordinates
     {
-        private int X;
-        private int Y;
-        public int Cordeinates(int x, int y) 
-        {
-            return x = X; y = Y;
-        }
-        public int x { get; set; }
-        public int y { get; set; }
+        public int X;
+        public int Y;
+        
+    
     }
 
-    
-    
+
+
 
 
 
 }
-
-
-
-
-
