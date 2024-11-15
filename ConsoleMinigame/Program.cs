@@ -1,4 +1,5 @@
 using ConsoleNewMinigame;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConsoleApp1
 {
@@ -116,7 +117,7 @@ namespace ConsoleApp1
             Player player = (Player)instance;
             int Y_off = player.Yoff;
             int X_off = player.Xoff;
-            int Length = player.lengthX.Count() + 1;
+            int Length = player.length.Count() + 1;
             WriteAt(" ", 0, 0);
 
             if (Console.KeyAvailable == true)
@@ -131,13 +132,24 @@ namespace ConsoleApp1
 
             switch (player.last_key)
             {
-                case "T":
-
+                case "M":
+                    
                     Swing(grid, player);
-                break;
+                    player.last_key = player.previous_key;
+                    break;
                 case "G":
-                    player.God_Mode = true;
-                    WriteAt("GodMode", 0,2); break;
+                    if (player.God_Mode == true)
+                    {
+                        player.God_Mode = false;
+                        WriteAt("       ", 0, 2);
+                    }
+                    else
+                    {
+                        player.God_Mode = true;
+                        WriteAt("GodMode", 0, 2);
+                    }
+                    player.last_key = null;
+                    break;
                 case "R":
 
                     Fruit_Spawner(grid, player);
@@ -149,10 +161,11 @@ namespace ConsoleApp1
                     //Swing(grid, player); break;
                     Increase_size(player);
                     player.last_key = "Enter";
+                    
                     break;
 
                 case "W":
-
+                    player.previous_key = player.last_key;
                     player.y--;
                     if (grid[player.y, player.x] == 1)
                     {
@@ -167,7 +180,7 @@ namespace ConsoleApp1
                     break;
                 case "A":
 
-
+                    player.previous_key = player.last_key;
                     player.x--;
                     if (grid[player.y, player.x] == 1)
                     {
@@ -182,7 +195,7 @@ namespace ConsoleApp1
                     break;
                 case "S":
 
-
+                    player.previous_key = player.last_key;
                     player.y++;
                     if (grid[player.y, player.x] == 1)
                     {
@@ -197,7 +210,7 @@ namespace ConsoleApp1
                     break;
                 case "D":
 
-
+                    player.previous_key = player.last_key;
                     player.x++;
                     if (grid[player.y, player.x] == 1)
                     {
@@ -218,46 +231,87 @@ namespace ConsoleApp1
         }
         //may remove this tomorow or rename it
 
-        static void LoopPrint(int counter , int x, int y, string text,object instance) 
+        static void LoopPrint(int counter, int x, int y, string text, object instance)
         {
-            
-            
-            Player player = (Player) instance;
+
+
+            Player player = (Player)instance;
             int X = player.x * 2;
             int Y = player.y;
-            while (0 > counter)
+            
+            while (0 < counter)
             {
-                WriteAt(text, X+(counter * x),Y + (counter *y));
+                WriteAt(text, player.Xoff+X + (counter * x * 2), Y+player.Yoff + (counter * y));
                 counter--;
             }
+            
         }
         static void Swing(int[,] grid, object instance)
         {
 
             Player player = (Player)instance;
             //           x, y
-            LoopPrint(6, 1, 0, "--", player);
-            LoopPrint(6, -1, 0, "--", player);
-            LoopPrint(6, 0, -1, "| ", player);
-            LoopPrint(6, 0, 1, "|", player);
+            //LoopPrint(6, 1, 0, "--", player);
+            //LoopPrint(6, -1, 0, "--", player);
+            //LoopPrint(6, 0, -1, "| ", player);
+            //LoopPrint(6, 0, 1, "|", player);
+            //Thread.Sleep(100);
+            //LoopPrint(6, 1, 0, "  ", player);
+            //LoopPrint(6, -1, 0, "  ", player);
+            //LoopPrint(6, 0, -1, "  ", player);
+            //LoopPrint(6, 0, 1, "  ", player);
+
+            int delay = 100;
+            switch (player.previous_key)
+            {
+                case "D":
+                    LoopPrint(6, 1, 0, "--", player);
+                    Thread.Sleep(delay);
+                    LoopPrint(6, 1, 0, "  ", player);
+                    break;
+                case "W":
+                    LoopPrint(6, 0, -1, "| ", player);
+                    Thread.Sleep(delay);
+                    LoopPrint(6, 0, -1, "  ", player);
+                    break;
+                case "S":
+                    LoopPrint(6, 0, 1, "| ", player);
+                    Thread.Sleep(delay);
+                    LoopPrint(6, 0, 1, "  ", player);
+                    break;
+                case "A":
+                    LoopPrint(6, -1, 0, "--", player);
+                    Thread.Sleep(delay);
+                    LoopPrint(6, -1, 0, "  ", player);
+                    break;
+
+            }
 
 
 
         }
         static void Tail(object instance, int[,] grid)
         {
+            Cordinates cordinates = new Cordinates();
             Thread.Sleep(100);
             Player player = (Player)instance;
             int x = player.x;
             int y = player.y;
-            player.lengthX.Enqueue(x);
-            player.lengthY.Enqueue(y);
+            cordinates.X = x;
+            cordinates.Y = y;
+            player.length.Enqueue(cordinates);
             WriteAt("██", x * 2 + player.Xoff, y + player.Yoff);
-            ;
+            
             try
             {
-                grid[player.lengthY.Peek(), player.lengthX.Peek()] = 0;
-                WriteAt("  ", player.lengthX.Dequeue() * 2 + player.Xoff, player.lengthY.Dequeue() + player.Yoff);
+                //grid[player.lengthY.Peek(), player.lengthX.Peek()] = 0;
+                Cordinates cord = player.length.Peek();
+                //Cordinates cordPrint = player.length.Dequeue();
+                grid[cord.Y, cord.X] = 0;
+                //WriteAt("  ", player.lengthX.Dequeue() * 2 + player.Xoff, player.lengthY.Dequeue() + player.Yoff);
+                WriteAt("  ", cord.X * 2 + player.Xoff, cord.Y + player.Yoff);
+                WriteAt("██", 0 + player.Xoff, 0 + player.Yoff);
+                player.length.Dequeue();
             }
 
             catch
@@ -268,10 +322,14 @@ namespace ConsoleApp1
         }
         static void Increase_size(object instance)
         {
+            Cordinates cordinates = new Cordinates();
             Player player = (Player)instance;
-            player.lengthX.Enqueue(player.x);
-            player.lengthY.Enqueue(player.y);
-            WriteAt("Score:" + player.lengthY.Count(), 7, 0);
+            //Cordinates cord = player.length.Peek();
+            //Cordinates cordPrint = player.length.Dequeue();
+            
+            //player.lengthX.Enqueue(player.x);
+            player.length.Enqueue(cordinates);
+            WriteAt("Score:" + player.length.Count(), 7, 0);
 
         }
 
@@ -279,8 +337,8 @@ namespace ConsoleApp1
         {
             Player player = (Player)instance;
             Random random = new Random();
-            int y = random.Next(1, grid.GetLength(0)-1);
-            int x = random.Next(1, grid.GetLength(01)-1);
+            int y = random.Next(1, grid.GetLength(0) - 1);
+            int x = random.Next(1, grid.GetLength(1) - 1);
             grid[y, x] = 3;
             Console.ForegroundColor = ConsoleColor.Red;
             WriteAt("██", x * 2 + player.Xoff, y + player.Yoff);
@@ -293,7 +351,7 @@ namespace ConsoleApp1
             if (player.God_Mode != true)
             {
                 Console.Clear();
-                
+
                 player.Is_alive = false;
                 WriteAt(" _________________ ", player.x * 2 + player.Xoff, player.y - 1 + player.Yoff);
                 WriteAt("/                 \\", player.x * 2 + player.Xoff, player.y + player.Yoff);
@@ -306,9 +364,3 @@ namespace ConsoleApp1
         }
     }
 }
-
-
-
-
-
-
